@@ -1,6 +1,5 @@
 # TheDailyProphet
 
-AR Image Recognition with Video Overlay
 This iOS project demonstrates the use of ARKit and SceneKit to recognize reference images in the real world and overlay a video on top of them in augmented reality. The app uses ARWorldTracking and ARImageTrackingConfiguration to detect images and play corresponding videos when those images are recognized.
 
 Features
@@ -17,7 +16,7 @@ Clone the repository:
 
 bash
 Copiar
-git clone https://github.com/your-username/ARImageRecognitionWithVideoOverlay.git
+git clone https://github.com/Firita/TheDailyProphet.git
 Open the project in Xcode.
 
 Make sure your device is connected, as ARKit requires a real device (simulator doesn't support AR).
