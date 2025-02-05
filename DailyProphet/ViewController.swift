@@ -4,30 +4,44 @@ import SceneKit
 
 class ViewController: UIViewController {
 
-    var sceneView: ARSCNView!  // This will be the ARSCNView that displays the AR content.
-    let videoNode = SKVideoNode(fileNamed: "HarryPotter\(Constants.movieExtension)")
+    lazy var sceneView: ARSCNView = {
+        let arView = ARSCNView()
+        arView.translatesAutoresizingMaskIntoConstraints = false
+        arView.delegate = self
+        return arView
+    }() // This will be the ARSCNView that displays the AR content.
+
+    let videoNode = SKVideoNode(fileNamed: Constants.videoName)
 
     // Constants for configuration and media files
     private enum Constants {
         static let imageToRecognizeFolder: String = "ImagesToRecognize"  // Folder containing reference images to track
-        static let movieExtension: String = ".mp4"  // Extension for the video files
+        static let videoName: String = "HarryPotter.mp4"
         static let maximumNumberOfTrackedImages: Int = 1  // Maximum number of images to track at once
         static let videoSceneHeight: Int = 360  // Height for the video scene
-        static let videoSceneWidth: Int = 480  // Width for the video scene
+        static let videoSceneWidth: Int = 640  // Width for the video scene
     }
 
     // This method is called when the view is loaded
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        configureSceneView()  // Calls function to set up AR scene view
+        setup()
     }
 
     // This method is called when the view is about to appear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         activeARWorldTracking()  // Starts AR world tracking with image recognition
+    }
+
+    private func setup() {
+        view.addSubview(sceneView)
+        NSLayoutConstraint.activate([
+            sceneView.topAnchor.constraint(equalTo: view.topAnchor),
+            sceneView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            sceneView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            sceneView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
 
     // This method is called when the view is about to disappear
@@ -40,15 +54,6 @@ class ViewController: UIViewController {
 
 // MARK: - ViewController Private functions
 extension ViewController {
-
-    // Sets up the ARSCNView
-    private func configureSceneView() {
-        sceneView = ARSCNView(frame: view.bounds)  // Creates a new ARSCNView with the same bounds as the view
-        sceneView.autoresizingMask = [.flexibleWidth, .flexibleHeight]  // Ensures the AR view resizes with the screen
-        sceneView.delegate = self  // Sets the ViewController as the delegate for ARSCNView
-        view.addSubview(sceneView)  // Adds the sceneView to the view hierarchy
-        sceneView.showsStatistics = false  // Disables AR statistics display
-    }
 
     // Starts AR session with image recognition
     private func activeARWorldTracking() {
@@ -83,7 +88,7 @@ extension ViewController: ARSCNViewDelegate {
         // Checks if the anchor is an image anchor (meaning it's a recognized image)
         guard
             let imageAnchor = anchor as? ARImageAnchor,
-            let videoScene = videoScene(imageAnchor: imageAnchor)  // Calls videoScene to get the SKScene for the video
+            let videoScene = videoScene()  // Calls videoScene to get the SKScene for the video
         else {
             return nil  // If it's not an image anchor, return nil (nothing to do)
         }
@@ -117,7 +122,7 @@ extension ViewController: ARSCNViewDelegate {
     }
 
     // This function creates a video scene to display on the AR image
-    private func videoScene(imageAnchor : ARImageAnchor) -> SKScene? {
+    private func videoScene() -> SKScene? {
 
         // Creates a new SKScene to hold the video
         let videoScene = SKScene(
